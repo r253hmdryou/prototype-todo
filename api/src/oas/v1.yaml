@@ -1,0 +1,241 @@
+openapi: "3.0.2"
+
+info:
+  version: "1.0.0"
+  title: "todo-api"
+  description: "API for TODO app"
+
+servers:
+- url: "https://api.localhost.r253hmdryou.dev/v1"
+  description: "Local server"
+
+security:
+- cookieAuth: []
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: "todoSession"
+      description: "Cookie auth"
+
+  responses:
+    BadRequest:
+      description: "Bad request"
+    UnauthorizedError:
+      description: "Access token is missing or invalid"
+    ForbiddenError:
+      description: "Access token is valid but user does not have permission to access the resource"
+    NotFound:
+      description: "Entity not found"
+    Conflict:
+      description: "Entity already exists"
+    InternalServerError:
+      description: "Internal server error"
+
+  parameters:
+    CSRFHeader:
+      name: "X-Requested-With"
+      in: header
+      required: true
+      description: "CSRF Header"
+      example: "XMLHttpRequest"
+      schema:
+        type: string
+
+    UserId:
+      name: userId
+      in: path
+      description: "User ID"
+      required: true
+      schema:
+        $ref: "#/components/schemas/Id"
+
+  schemas:
+    Id:
+      description: ID
+      type: string
+      format: uuid
+      example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+    email:
+      description: Email
+      type: string
+      format: email
+      example: "example@example.com"
+    password:
+      description: |
+        * Must be at least 8 characters long
+        * Must be at most 200 characters long
+      type: string
+      example: "password"
+
+    UserForMe:
+      type: object
+      required:
+      - id
+      - email
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        email:
+          $ref: "#/components/schemas/email"
+
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          $ref: "#/components/schemas/email"
+        password:
+          $ref: "#/components/schemas/password"
+    ConfirmEmailToCreateUserRequest:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          $ref: "#/components/schemas/email"
+    SignUpRequest:
+      type: object
+      required:
+      - password
+      properties:
+        password:
+          $ref: "#/components/schemas/password"
+
+paths:
+  /hello:
+    get:
+      summary: "Get Hello World"
+      description: "Get Hello World"
+      operationId: "getHelloWorld"
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      responses:
+        200:
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Hello World!"
+
+  /login:
+    post:
+      summary: "Login"
+      description: "Login"
+      operationId: "login"
+      tags:
+      - authentication
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        201:
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserForMe"
+          headers:
+            Set-Cookie:
+              description: "Set-Cookie"
+              schema:
+                type: string
+                example: connect.sid=s%3AY4gIObyuUR_tzAJNM9vgwtzMySeb9IFu.aCaMCHC9tFB7tibrUF4tFUFLp3VtHOBSXUdJc2YisP4; Path=/; Expires=Sat, 03 Sep 2022 23:11:28 GMT; HttpOnly
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /logout:
+    post:
+      summary: "Logout"
+      description: "disable cookie to logout"
+      operationId: "Logout"
+      tags:
+      - authentication
+      security:
+      - cookieAuth: []
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      responses:
+        201:
+          description: "Successful operation"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /users:
+    post:
+      summary: "Confirm email to Create User"
+      description: |
+        Confirm email to Create User
+        * Api sends an email to the user with a link to confirm the email address.
+        * if already registerd, successful response is returned too.
+      operationId: "confirmEmailToCreateUser"
+      tags:
+      - users
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmEmailToCreateUserRequest"
+      responses:
+        201:
+          description: "Always returns success if the format of the emaill address is correct"
+        400:
+          $ref: "#/components/responses/BadRequest"
+  /users/me:
+    get:
+      summary: "Get my user"
+      description: "Get my user"
+      operationId: "getMyUser"
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      responses:
+        200:
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserForMe"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /users/{userId}:
+    post:
+      summary: "Sign up"
+      description: "Sign up"
+      operationId: "signUp"
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UserId"
+      - $ref: "#/components/parameters/CSRFHeader"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        201:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserForMe"
+        400:
+          $ref: "#/components/responses/BadRequest"

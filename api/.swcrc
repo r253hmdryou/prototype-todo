@@ -1,0 +1,17 @@
+{
+	"$schema": "http://json.schemastore.org/swcrc",
+	"jsc": {
+		"baseUrl": ".",
+		"paths": {
+			"@test/*": [
+				"test/*"
+			]
+		},
+		"parser": {
+			"syntax": "typescript",
+			"decorators": true,
+			"dynamicImport": false
+		}
+	},
+	"sourceMaps": "inline"
+}

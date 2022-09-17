@@ -1,0 +1,12 @@
+/.git/
+/coverage/
+/docker/mariadb/data
+/dist/
+/node_modules/
+/test/
+.dockerignore
+.editorconfig
+.gitignore
+docker-compose.yml
+LICENSE
+Dockerfile
