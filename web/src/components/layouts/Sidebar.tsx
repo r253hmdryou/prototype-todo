@@ -1,13 +1,11 @@
 import React from "react";
 import { css } from "@emotion/react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from '@mui/icons-material/Close';
 
 import { Link } from "react-router-dom";
 
 export function Sidebar() {
-	const [isMenuOpen, setIsMenuOpen] = React.useState(true);
+	const [isMenuOpen, _setIsMenuOpen] = React.useState(true);
 	const menuStyle = isMenuOpen ? style.menuOpen : style.menuClose;
 
 	return (
