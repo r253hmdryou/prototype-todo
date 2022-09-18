@@ -1,8 +1,11 @@
 import "normalize.css";
 import { Router } from "@/Router";
+import { Context } from "./Context";
 
 export function App() {
 	return (
-		<Router />
+		<Context>
+			<Router />
+		</Context>
 	);
 }

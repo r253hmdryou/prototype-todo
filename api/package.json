@@ -30,7 +30,8 @@
     "pretest": "run-s prebuild build:db:migrations",
     "test": "dotenv -e .env.test tsc -p tsconfig.json --noEmit && dotenv -e .env.test jest",
     "lint": "eslint ./src --ext .ts",
-    "generate:type": "swagger-typescript-api -p ./src/oas/v1.yaml -o ./src/server/types -n api.ts --no-client --route-types --responses"
+    "generate:type": "swagger-typescript-api -p ./src/oas/v1.yaml -o ./src/server/types -n api.ts --no-client --route-types --responses",
+    "generate:type:web": "swagger-typescript-api -p ./src/oas/v1.yaml -o ../web/src/api -n api.ts --route-types --responses"
   },
   "dependencies": {
     "argon2": "0.29.1",
