@@ -1,12 +1,44 @@
 import React from "react";
-import { css } from "@emotion/react";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-
 import { Link } from "react-router-dom";
+import { css } from "@emotion/react";
+
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+import { UserContext } from "@/Context";
+
+const guestLinks = [
+	{
+		to: "/",
+		label: "ホーム",
+		icon: DashboardIcon,
+	},
+	{
+		to: "/login",
+		label: "ログイン",
+		icon: LoginIcon,
+	},
+];
+
+const userLinks = [
+	{
+		to: "/",
+		label: "ホーム",
+		icon: DashboardIcon,
+	},
+	{
+		to: "/logout",
+		label: "ログアウト",
+		icon: LogoutIcon,
+	},
+];
 
 export function Sidebar() {
+	const user = React.useContext(UserContext);
 	const [isMenuOpen, _setIsMenuOpen] = React.useState(true);
 	const menuStyle = isMenuOpen ? style.menuOpen : style.menuClose;
+	const links = user === false ? guestLinks : userLinks;
 
 	return (
 		<div id="sidebar" css={menuStyle}>
@@ -14,23 +46,16 @@ export function Sidebar() {
 				ToDo アプリ
 			</div>
 			<ul css={style.ul}>
-				<SidebarItem />
-				<SidebarItem />
-				<SidebarItem />
-				<SidebarItem />
+				{links.map((link) => (
+					<li css={style.li} key={link.to}>
+						<Link to={link.to} css={style.link}>
+							<link.icon css={style.icon}/>
+							{link.label}
+						</Link>
+					</li>
+				))}
 			</ul>
 		</div>
-	);
-}
-
-function SidebarItem() {
-	return (
-		<li css={style.li}>
-			<Link to="/" css={style.link}>
-				<DashboardIcon css={style.icon}/>
-				test
-			</Link>
-		</li>
 	);
 }
 
@@ -56,7 +81,8 @@ const style = {
 	`,
 	li: css`
 		line-height: 50px;
-		padding-left: 30px;
+		padding-right: 20px;
+		padding-left: 20px;
 		border-bottom: 1px solid;
 	`,
 	icon: css`
@@ -69,6 +95,7 @@ const style = {
 		height: 100%;
 		width: 100%;
 		text-decoration: none;
+		color: #000000;
 
 		&:hover {
 			padding-left: 20px;

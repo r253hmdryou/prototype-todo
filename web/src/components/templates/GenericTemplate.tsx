@@ -29,8 +29,6 @@ const style = {
 	`,
 	wrapper: css`
 		display: flex;
-		align-items: stretch;
-		box-sizing: inherit;
 		height: auto;
 		height: 100%;
 	`,

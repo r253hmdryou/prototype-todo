@@ -17,15 +17,15 @@ export function Context({children}: Props) {
 	);
 }
 
-export const UserStateContext = React.createContext<User>(userInitialState);
+export const UserContext = React.createContext<User>(userInitialState);
 export const UserDispatchContext = React.createContext<React.Dispatch<UserAction>>(() => {});
 
 function UserContextWrapper({children}: Props) {
 
-	const [userState, userDispatch] = useUserReducer();
+	const [user, userDispatch] = useUserReducer();
 
 	React.useEffect(() => {
-		if(userState === null) {
+		if(user === null) {
 			const api = new Api;
 			api.users.getMyUser({
 				credentials: "include",
@@ -47,19 +47,19 @@ function UserContextWrapper({children}: Props) {
 				}
 			});
 		}
-	}, [userState]);
+	}, [user]);
 
-	if(userState === null) {
+	if(user === null) {
 		return (
 			<div>Loading...</div>
 		);
 	}
 
 	return (
-		<UserStateContext.Provider value={userState}>
+		<UserContext.Provider value={user}>
 			<UserDispatchContext.Provider value={userDispatch}>
 				{children}
 			</UserDispatchContext.Provider>
-		</UserStateContext.Provider>
+		</UserContext.Provider>
 	);
 }

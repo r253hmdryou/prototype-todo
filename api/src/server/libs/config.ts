@@ -26,7 +26,6 @@ export const config = {
 		cookie: {
 			maxAge: 86400 * 1000,
 			httpOnly: true,
-			domain: "www.localhost.r253hmdryou.dev",
 			secure: getIsSecureCookie(),
 			sameSite: "none" as const,
 		},

@@ -1,5 +1,5 @@
-import { Login } from "@/api/api";
 import React from "react";
+import { Api, Login } from "@/api/api";
 
 /**
  * 認証されていればユーザーデータが入る
@@ -30,7 +30,13 @@ const userReducer: React.Reducer<User, UserAction> = (_state, action): User => {
 	case "failedToLogin":
 		return false;
 	case "logout":
-		return null;
+		(new Api).logout.logout({
+			credentials: "include",
+			headers: {
+				"X-Requested-With": "XMLHttpRequest",
+			},
+		});
+		return false;
 	}
 };
 
