@@ -6,7 +6,7 @@ import {routing as routingUsers} from "./v1/users";
 import {routing as routingProjects} from "./v1/projects";
 
 import * as services from "services/v1";
-import { Login } from "types/api";
+import { Login, Me } from "types/api";
 import * as validators from "validators/v1";
 
 /**
@@ -19,7 +19,8 @@ export function routing(): express.Router {
 		.use("/projects", routingProjects())
 		.get("/hello", routingHandler(getHello))
 		.post("/login", routingHandler(postLogin))
-		.post("/logout", routingHandler(postLogout));
+		.post("/logout", routingHandler(postLogout))
+		.get("/me", routingHandler(getMe));
 }
 
 /**
@@ -62,4 +63,18 @@ async function postLogout(req: express.Request, res: express.Response): Promise<
 	res
 		.status(200)
 		.send();
+}
+
+/**
+ * GET /v1/users/me
+ * get my user
+ * @param req request
+ * @param res response
+ * @returns void
+ */
+async function getMe(req: express.Request, res: express.Response): Promise<void> {
+	const resBody: Me.GetMyUser.ResponseBody = await services.getMe(req.sessionID);
+	res
+		.status(200)
+		.send(resBody);
 }

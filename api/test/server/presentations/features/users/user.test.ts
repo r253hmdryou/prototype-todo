@@ -391,7 +391,7 @@ function testLogin(): void {
 		// get my user - not logged in cookie
 		{
 			const response = await request(app)
-				.get(`/v1/users/me`)
+				.get(`/v1/me`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", cookie);
 
@@ -484,7 +484,7 @@ function testGetMe(): void {
 		// ユーザー情報の取得
 		{
 			const response = await request(app)
-				.get(`/v1/users/me`)
+				.get(`/v1/me`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", cookie);
 
@@ -508,7 +508,7 @@ function testGetMe(): void {
 		// get my user
 		{
 			const response = await request(app)
-				.get(`/v1/users/me`)
+				.get(`/v1/me`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", cookie);
 
@@ -549,7 +549,7 @@ function testGetMe(): void {
 		// get my user - not logged in cookie
 		{
 			const response = await request(app)
-				.get(`/v1/users/me`)
+				.get(`/v1/me`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", cookie);
 
@@ -563,7 +563,7 @@ function testGetMe(): void {
 		// get my user - cookie does not exist
 		{
 			const response = await request(app)
-				.get(`/v1/users/me`)
+				.get(`/v1/me`)
 				.set("X-Requested-With", "test");
 
 			expect(response.status).toEqual(401);

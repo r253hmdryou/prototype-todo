@@ -164,6 +164,26 @@ export namespace Logout {
   }
 }
 
+export namespace Me {
+  /**
+   * @description Get my user
+   * @tags users
+   * @name GetMyUser
+   * @summary Get my user
+   * @request GET:/me
+   * @secure
+   * @response `200` `UserForMe` Successful operation
+   * @response `401` `any`
+   */
+  export namespace GetMyUser {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = { "X-Requested-With": string };
+    export type ResponseBody = UserForMe;
+  }
+}
+
 export namespace Projects {
   /**
    * @description プロジェクトの作成
@@ -200,23 +220,6 @@ export namespace Users {
     export type RequestBody = ConfirmEmailToCreateUserRequest;
     export type RequestHeaders = { "X-Requested-With": string };
     export type ResponseBody = void;
-  }
-  /**
-   * @description Get my user
-   * @tags users
-   * @name GetMyUser
-   * @summary Get my user
-   * @request GET:/users/me
-   * @secure
-   * @response `200` `UserForMe` Successful operation
-   * @response `401` `any`
-   */
-  export namespace GetMyUser {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = { "X-Requested-With": string };
-    export type ResponseBody = UserForMe;
   }
   /**
    * @description Sign up

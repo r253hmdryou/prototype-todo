@@ -14,7 +14,6 @@ import { Users } from "types/api";
 export function routing(): express.Router {
 	return express.Router()
 		.post("/", routingHandler(post))
-		.get("/me", routingHandler(getMe))
 		.post("/:userId", routingHandler(postUserId));
 }
 
@@ -32,20 +31,6 @@ async function post(req: express.Request, res: express.Response): Promise<void> 
 	res
 		.status(201)
 		.send();
-}
-
-/**
- * GET /v1/users/me
- * get my user
- * @param req request
- * @param res response
- * @returns void
- */
-async function getMe(req: express.Request, res: express.Response): Promise<void> {
-	const resBody: Users.GetMyUser.ResponseBody = await services.getMe(req.sessionID);
-	res
-		.status(200)
-		.send(resBody);
 }
 
 /**

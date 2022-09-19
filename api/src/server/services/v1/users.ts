@@ -12,17 +12,6 @@ export async function post(email: string): Promise<void> {
 }
 
 /**
- * GET /v1/users/me
- * get my user
- * @param sessionID sessionID
- * @returns user
- */
-export async function getMe(sessionID: string): Promise<Users.GetMyUser.ResponseBody> {
-	const user = await UserUsecase.findAuthorizedUser(sessionID);
-	return UserUsecase.toResponse(user);
-}
-
-/**
  * POST /v1/users/:userId
  * signup user
  * @param userId userId

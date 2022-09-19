@@ -222,6 +222,27 @@ paths:
         401:
           $ref: "#/components/responses/UnauthorizedError"
 
+  /me:
+    get:
+      summary: "Get my user"
+      description: "Get my user"
+      operationId: "getMyUser"
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      responses:
+        200:
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserForMe"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+
   /projects:
     post:
       summary: "プロジェクトの作成"
@@ -268,26 +289,6 @@ paths:
           description: "Always returns success if the format of the emaill address is correct"
         400:
           $ref: "#/components/responses/BadRequest"
-  /users/me:
-    get:
-      summary: "Get my user"
-      description: "Get my user"
-      operationId: "getMyUser"
-      tags:
-      - users
-      security:
-      - cookieAuth: []
-      parameters:
-      - $ref: "#/components/parameters/CSRFHeader"
-      responses:
-        200:
-          description: "Successful operation"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserForMe"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
   /users/{userId}:
     post:
       summary: "Sign up"
