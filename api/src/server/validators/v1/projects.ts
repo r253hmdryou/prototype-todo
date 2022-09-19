@@ -4,7 +4,7 @@ import vs from "value-schema";
 import { AppError } from "libs/error/AppError";
 import { ErrorMessage, errorMessages } from "libs/error/messages";
 
-import { ProjectAccessLevel, Projects, ProjectType } from "types/api";
+import { ProjectAccessLevel, Projects, ProjectTypePersonal } from "types/api";
 import { RULE } from "../common";
 import { Key } from "value-schema/dist/libs/types";
 import { project } from "libs/validator";
@@ -21,7 +21,7 @@ const schemaBodyPost = {
 		only: [ProjectAccessLevel.Private, ProjectAccessLevel.Public],
 	}),
 	type: vs.enumeration({
-		only: [ProjectType.Personal],
+		only: [ProjectTypePersonal.Personal],
 	}),
 };
 

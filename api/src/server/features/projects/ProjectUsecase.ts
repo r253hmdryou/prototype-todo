@@ -1,4 +1,4 @@
-import { Project, ProjectAccessLevel, ProjectType } from "types/api";
+import { Project, ProjectAccessLevel, ProjectType, ProjectTypePersonal } from "types/api";
 
 import { AccessLevel, ProjectEntity, Type } from "./ProjectEntity";
 import * as ProjectRepository from "./ProjectRepository";
@@ -30,7 +30,7 @@ export function convertAccessLevel(accessLevelString: ProjectAccessLevel): Acces
 export function convertType(typeString: ProjectType): Type {
 	switch (typeString) {
 
-	case ProjectType.Personal:
+	case ProjectTypePersonal.Personal:
 		return Type.PERSONAL;
 
 	}
@@ -100,7 +100,7 @@ export function toResponse$type(type: Type): ProjectType {
 	switch (type) {
 
 	case Type.PERSONAL:
-		return ProjectType.Personal;
+		return ProjectTypePersonal.Personal;
 
 	}
 }

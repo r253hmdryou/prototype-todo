@@ -47,12 +47,17 @@ export enum ProjectAccessLevel {
 }
 
 /**
- * プロジェクトの種類
+ * プロジェクトの種類（個人）
  * @example personal
  */
-export enum ProjectType {
+export enum ProjectTypePersonal {
   Personal = "personal",
 }
+
+/**
+ * プロジェクトの種類
+ */
+export type ProjectType = ProjectTypePersonal;
 
 export interface ProjectCore {
   /**
@@ -73,12 +78,11 @@ export interface ProjectCore {
 
   /** 公開範囲 */
   accessLevel: ProjectAccessLevel;
-
-  /** プロジェクトの種類 */
-  type: ProjectType;
 }
 
-export type Project = ProjectCore & { id: Id; createdAt: CreatedAt };
+export type PersonalProject = ProjectCore & { id: Id; type: ProjectTypePersonal; createdAt: CreatedAt };
+
+export type Project = PersonalProject;
 
 export interface UserForMe {
   /** ID */
@@ -114,7 +118,7 @@ export interface SignUpRequest {
   password: Password;
 }
 
-export type CreateProjectRequest = ProjectCore;
+export type CreateProjectRequest = ProjectCore & { type: ProjectType };
 
 export namespace Hello {
   /**

@@ -82,12 +82,16 @@ components:
       - public
       - private
       example: "public"
-    projectType:
-      description: "プロジェクトの種類"
+    projectTypePersonal:
+      description: "プロジェクトの種類（個人）"
       type: string
       enum:
       - personal
       example: "personal"
+    projectType:
+      description: "プロジェクトの種類"
+      oneOf:
+      - $ref: "#/components/schemas/projectTypePersonal"
 
     ProjectCore:
       type: object
@@ -95,7 +99,6 @@ components:
       - name
       - description
       - accessLevel
-      - type
       properties:
         name:
           description: "プロジェクト名"
@@ -111,20 +114,24 @@ components:
           example: "Project Description"
         accessLevel:
           $ref: "#/components/schemas/projectAccessLevel"
-        type:
-          $ref: "#/components/schemas/projectType"
-    Project:
+    PersonalProject:
       allOf:
       - $ref: "#/components/schemas/ProjectCore"
       - type: object
         required:
         - id
+        - type
         - createdAt
         properties:
           id:
             $ref: "#/components/schemas/Id"
+          type:
+            $ref: "#/components/schemas/projectTypePersonal"
           createdAt:
             $ref: "#/components/schemas/createdAt"
+    Project:
+      oneOf:
+      - $ref: "#/components/schemas/PersonalProject"
 
     UserForMe:
       type: object
@@ -165,6 +172,12 @@ components:
     CreateProjectRequest:
       allOf:
       - $ref: "#/components/schemas/ProjectCore"
+      - type: object
+        required:
+        - type
+        properties:
+          type:
+            $ref: "#/components/schemas/projectType"
 
 paths:
   /hello:
