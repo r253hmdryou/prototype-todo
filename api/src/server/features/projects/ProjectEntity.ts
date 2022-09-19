@@ -8,11 +8,16 @@ export const enum AccessLevel {
 	PUBLIC = "public",
 }
 
+export const enum Type {
+	PERSONAL = "personal",
+}
+
 type PropertiesEssential = {
-	readonly owner: UserEntity;
+	readonly user: UserEntity;
 	readonly name: string;
 	readonly description: string;
 	readonly accessLevel: AccessLevel;
+	readonly type: Type;
 }
 
 type Properties = {
@@ -21,8 +26,9 @@ type Properties = {
 	name: string;
 	description: string;
 	accessLevel: AccessLevel;
+	type: Type;
 
-	readonly owner: UserEntity;
+	readonly user: UserEntity;
 
 	readonly createdAt: number;
 	deletedAt: number | null;
@@ -36,8 +42,9 @@ export class ProjectEntity extends Entity<Properties> {
 			name: properties.name,
 			description: properties.description,
 			accessLevel: properties.accessLevel,
+			type: properties.type,
 
-			owner: properties.owner,
+			user: properties.user,
 
 			createdAt: Date.now(),
 			deletedAt: null,
@@ -75,8 +82,12 @@ export class ProjectEntity extends Entity<Properties> {
 		return this.properties.accessLevel;
 	}
 
-	get owner(): UserEntity {
-		return this.properties.owner;
+	get type(): Type {
+		return this.properties.type;
+	}
+
+	get user(): UserEntity {
+		return this.properties.user;
 	}
 
 	get createdAt(): number {

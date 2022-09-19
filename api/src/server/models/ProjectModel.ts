@@ -9,12 +9,17 @@ export const enum AccessLevel {
 	PRIVATE = 1,
 }
 
+export const enum Type {
+	PERSONAL = 0,
+}
+
 export class ProjectModel extends Model<InferAttributes<ProjectModel>, InferCreationAttributes<ProjectModel>> {
 	declare id: CreationOptional<number>;
 	declare uuid: string;
 	declare name: string;
 	declare description: string;
 	declare accessLevel: number;
+	declare type: number;
 	declare userId: number | null;
 	declare createdAt: number;
 	declare deletedAt: number | null;
@@ -46,6 +51,11 @@ ProjectModel.init({
 	},
 	accessLevel: {
 		comment: "アクセスレベル",
+		allowNull: false,
+		type: DataTypes.TINYINT.UNSIGNED,
+	},
+	type: {
+		comment: "プロジェクトの区分（個人、チーム等）",
 		allowNull: false,
 		type: DataTypes.TINYINT.UNSIGNED,
 	},

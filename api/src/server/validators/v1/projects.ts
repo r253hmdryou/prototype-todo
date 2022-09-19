@@ -4,7 +4,7 @@ import vs from "value-schema";
 import { AppError } from "libs/error/AppError";
 import { ErrorMessage, errorMessages } from "libs/error/messages";
 
-import { ProjectAccessLevel, Projects } from "types/api";
+import { ProjectAccessLevel, Projects, ProjectType } from "types/api";
 import { RULE } from "../common";
 import { Key } from "value-schema/dist/libs/types";
 import { project } from "libs/validator";
@@ -19,6 +19,9 @@ const schemaBodyPost = {
 	}),
 	accessLevel: vs.enumeration({
 		only: [ProjectAccessLevel.Private, ProjectAccessLevel.Public],
+	}),
+	type: vs.enumeration({
+		only: [ProjectType.Personal],
 	}),
 };
 
@@ -65,6 +68,8 @@ function assignError(key: Key | undefined, rule: RULE): ErrorMessage {
 		}
 	case "accessLevel":
 		return errorMessages.project.param.accessLevel.default;
+	case "type":
+		return errorMessages.project.param.type.default;
 	default:
 		return errorMessages.general.badRequest;
 	}

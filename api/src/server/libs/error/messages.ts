@@ -90,6 +90,13 @@ export const errorMessages = {
 					message: "Invalid accessLevel. accessLevel must be one of 'public', 'private'",
 				},
 			},
+			type: {
+				default: {
+					status: STATUS.BAD_REQUEST,
+					code: "invalidProjectParamType",
+					message: "Invalid type. type must be one of 'personal'",
+				},
+			},
 		},
 	},
 	user: {

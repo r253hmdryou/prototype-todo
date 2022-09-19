@@ -1,6 +1,6 @@
-import { Project, ProjectAccessLevel } from "types/api";
+import { Project, ProjectAccessLevel, ProjectType } from "types/api";
 
-import { AccessLevel, ProjectEntity } from "./ProjectEntity";
+import { AccessLevel, ProjectEntity, Type } from "./ProjectEntity";
 import * as ProjectRepository from "./ProjectRepository";
 
 import { UserEntity } from "features/users/UserEntity";
@@ -23,19 +23,35 @@ export function convertAccessLevel(accessLevelString: ProjectAccessLevel): Acces
 }
 
 /**
+ * Typeを文字列から変換する
+ * @param typeString TypeString
+ * @returns Type
+ */
+export function convertType(typeString: ProjectType): Type {
+	switch (typeString) {
+
+	case ProjectType.Personal:
+		return Type.PERSONAL;
+
+	}
+}
+
+/**
  * プロジェクトを作成する
  * @param user ユーザー
  * @param name プロジェクト名
  * @param description プロジェクトの説明
  * @param accessLevel 公開範囲
+ * @param type プロジェクトの種類
  * @returns 作成されたプロジェクト
  */
-export async function create(user: UserEntity, name: string, description: string, accessLevel: AccessLevel): Promise<ProjectEntity> {
+export async function create(user: UserEntity, name: string, description: string, accessLevel: AccessLevel, type: Type): Promise<ProjectEntity> {
 	const project = ProjectEntity.factory({
 		name: name,
 		description: description,
 		accessLevel: accessLevel,
-		owner: user,
+		type: type,
+		user: user,
 	});
 
 	await ProjectRepository.save(project);
@@ -53,6 +69,7 @@ export function toResponse(project: ProjectEntity): Project {
 		name: project.name,
 		description: project.description,
 		accessLevel: toResponse$accessLevel(project.accessLevel),
+		type: toResponse$type(project.type),
 		createdAt: project.createdAt,
 	};
 }
@@ -70,6 +87,20 @@ export function toResponse$accessLevel(accessLevel: AccessLevel): ProjectAccessL
 
 	case AccessLevel.PUBLIC:
 		return ProjectAccessLevel.Public;
+
+	}
+}
+
+/**
+ * レスポンス用に変換する; プロジェクトの種類
+ * @param type プロジェクトの種類
+ * @returns プロジェクトの種類
+ */
+export function toResponse$type(type: Type): ProjectType {
+	switch (type) {
+
+	case Type.PERSONAL:
+		return ProjectType.Personal;
 
 	}
 }

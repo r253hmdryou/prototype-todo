@@ -1,5 +1,5 @@
-import { AccessLevel, ProjectModel } from "models/ProjectModel";
-import { ProjectEntity, AccessLevel as EntityAccessLevel } from "./ProjectEntity";
+import { AccessLevel, ProjectModel, Type } from "models/ProjectModel";
+import { ProjectEntity, AccessLevel as EntityAccessLevel, Type as EntityType } from "./ProjectEntity";
 
 /**
  * エンティティーを永続化する
@@ -22,7 +22,8 @@ function toModel(project: ProjectEntity): ProjectModel {
 		name: project.name,
 		description: project.description,
 		accessLevel: toModel$accessLevel(project.accessLevel),
-		userId: project.owner.id,
+		type: toModel$type(project.type),
+		userId: project.user.id,
 		createdAt: project.createdAt,
 		deletedAt: project.deletedAt,
 	});
@@ -41,10 +42,26 @@ function toModel(project: ProjectEntity): ProjectModel {
  */
 function toModel$accessLevel(accessLevel: EntityAccessLevel): AccessLevel {
 	switch (accessLevel) {
+
 	case EntityAccessLevel.PRIVATE:
 		return AccessLevel.PRIVATE;
 
 	case EntityAccessLevel.PUBLIC:
 		return AccessLevel.PUBLIC;
+
+	}
+}
+
+/**
+ * モデルに変換; プロジェクトの種類
+ * @param type プロジェクトの種類
+ * @returns プロジェクトの種類
+ */
+function toModel$type(type: EntityType): Type {
+	switch (type) {
+
+	case EntityType.PERSONAL:
+		return Type.PERSONAL;
+
 	}
 }

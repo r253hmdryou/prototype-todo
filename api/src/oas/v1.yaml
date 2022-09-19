@@ -82,6 +82,12 @@ components:
       - public
       - private
       example: "public"
+    projectType:
+      description: "プロジェクトの種類"
+      type: string
+      enum:
+      - personal
+      example: "personal"
 
     ProjectCore:
       type: object
@@ -89,6 +95,7 @@ components:
       - name
       - description
       - accessLevel
+      - type
       properties:
         name:
           description: "プロジェクト名"
@@ -104,6 +111,8 @@ components:
           example: "Project Description"
         accessLevel:
           $ref: "#/components/schemas/projectAccessLevel"
+        type:
+          $ref: "#/components/schemas/projectType"
     Project:
       allOf:
       - $ref: "#/components/schemas/ProjectCore"

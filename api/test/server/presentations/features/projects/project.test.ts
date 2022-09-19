@@ -27,6 +27,7 @@ function testCreateProject(): void {
 					name: "project",
 					description: "private project",
 					accessLevel: "private",
+					type: "personal",
 				});
 
 			expect(response.status).toEqual(401);
@@ -48,6 +49,7 @@ function testCreateProject(): void {
 					name: "aliceProject",
 					description: "private project of Alice",
 					accessLevel: "private",
+					type: "personal",
 				});
 
 			expect(response.status).toEqual(201);
@@ -56,6 +58,7 @@ function testCreateProject(): void {
 				name: "aliceProject",
 				description: "private project of Alice",
 				accessLevel: "private",
+				type: "personal",
 				createdAt: 1663513200000,
 			});
 		});
@@ -70,6 +73,7 @@ function testCreateProject(): void {
 					name: "aliceProject",
 					description: "public project of Alice",
 					accessLevel: "public",
+					type: "personal",
 				});
 
 			expect(response.status).toEqual(201);
@@ -78,6 +82,7 @@ function testCreateProject(): void {
 				name: "aliceProject",
 				description: "public project of Alice",
 				accessLevel: "public",
+				type: "personal",
 				createdAt: 1663513200000,
 			});
 		});
@@ -110,6 +115,10 @@ function testCreateProject(): void {
 						code: "invalidProjectParamAccessLevel",
 						message: "Invalid accessLevel. accessLevel must be one of 'public', 'private'",
 					},
+					{
+						code: "invalidProjectParamType",
+						message: "Invalid type. type must be one of 'personal'",
+					},
 				],
 			});
 		}
@@ -124,6 +133,7 @@ function testCreateProject(): void {
 					name: "a".repeat(21),
 					description: "a".repeat(1001),
 					accessLevel: "invalid",
+					type: "invalid",
 				});
 
 			expect(response.status).toEqual(400);
@@ -143,6 +153,10 @@ function testCreateProject(): void {
 						code: "invalidProjectParamAccessLevel",
 						message: "Invalid accessLevel. accessLevel must be one of 'public', 'private'",
 					},
+					{
+						code: "invalidProjectParamType",
+						message: "Invalid type. type must be one of 'personal'",
+					},
 				],
 			});
 		}
@@ -157,6 +171,7 @@ function testCreateProject(): void {
 					name: "",
 					description: "project description",
 					accessLevel: "public",
+					type: "personal",
 				});
 
 			expect(response.status).toEqual(400);

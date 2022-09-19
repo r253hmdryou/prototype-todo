@@ -1,4 +1,4 @@
-import { AccessLevel, ProjectEntity } from "features/projects/ProjectEntity";
+import { AccessLevel, ProjectEntity, Type } from "features/projects/ProjectEntity";
 import { UserEntity } from "features/users/UserEntity";
 
 {
@@ -19,7 +19,8 @@ function testProjectEntity(): void {
 			name: "test",
 			description: "test",
 			accessLevel: AccessLevel.PRIVATE,
-			owner: user,
+			user: user,
+			type: Type.PERSONAL,
 		});
 
 		expect(() => {

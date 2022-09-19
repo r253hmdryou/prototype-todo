@@ -36,6 +36,11 @@ export async function up(queryInterface: QueryInterface, _sequelize: Sequelize):
 			allowNull: false,
 			type: DataTypes.TINYINT.UNSIGNED,
 		},
+		type: {
+			comment: "プロジェクトの区分（個人、チーム等）",
+			allowNull: false,
+			type: DataTypes.TINYINT.UNSIGNED,
+		},
 		user_id: {
 			comment: "作成者ID",
 			allowNull: true,

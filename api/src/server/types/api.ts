@@ -46,6 +46,14 @@ export enum ProjectAccessLevel {
   Private = "private",
 }
 
+/**
+ * プロジェクトの種類
+ * @example personal
+ */
+export enum ProjectType {
+  Personal = "personal",
+}
+
 export interface ProjectCore {
   /**
    * プロジェクト名
@@ -65,6 +73,9 @@ export interface ProjectCore {
 
   /** 公開範囲 */
   accessLevel: ProjectAccessLevel;
+
+  /** プロジェクトの種類 */
+  type: ProjectType;
 }
 
 export type Project = ProjectCore & { id: Id; createdAt: CreatedAt };
