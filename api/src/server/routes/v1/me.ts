@@ -11,7 +11,8 @@ import { Me } from "types/api";
  */
 export function routing(): express.Router {
 	return express.Router()
-		.get("/", routingHandler(get));
+		.get("/", routingHandler(get))
+		.get("/projects", routingHandler(getProjects));
 }
 
 /**
@@ -23,6 +24,20 @@ export function routing(): express.Router {
  */
 async function get(req: express.Request, res: express.Response): Promise<void> {
 	const resBody: Me.GetMyUser.ResponseBody = await services.get(req.sessionID);
+	res
+		.status(200)
+		.send(resBody);
+}
+
+/**
+ * GET /v1/me/projects
+ * get my projects
+ * @param req request
+ * @param res response
+ * @returns void
+ */
+async function getProjects(req: express.Request, res: express.Response): Promise<void> {
+	const resBody: Me.GetMyPersonalProjects.ResponseBody = await services.getProjects(req.sessionID);
 	res
 		.status(200)
 		.send(resBody);

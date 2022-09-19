@@ -264,6 +264,28 @@ paths:
                 $ref: "#/components/schemas/UserForMe"
         401:
           $ref: "#/components/responses/UnauthorizedError"
+  /me/projects:
+    get:
+      summary: "自分の個人プロジェクトの一覧"
+      description: "自分の個人プロジェクトの一覧"
+      operationId: "getMyPersonalProjects"
+      tags:
+      - projects
+      security:
+      - cookieAuth: []
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      responses:
+        200:
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PersonalProject"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
 
   /projects:
     post:

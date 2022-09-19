@@ -10,6 +10,7 @@ import mockDate from "@test/libs/date";
 	initializeTest();
 
 	describe("プロジェクトの作成", testCreateProject);
+	describe("自分の個人プロジェクトの取得", testGetMyPersonalProjects);
 }
 
 /**
@@ -185,6 +186,59 @@ function testCreateProject(): void {
 					},
 				],
 			});
+		}
+	});
+}
+
+/**
+ * 自分の個人プロジェクトを取得する
+ * @returns void
+ */
+function testGetMyPersonalProjects(): void {
+	test("自分の個人プロジェクトを取得する", async() => {
+		await registerUser("bob@example.com", "password");
+		const aliceCookie = await getCookie("alice@example.com", "password");
+		const bobCookie = await getCookie("bob@example.com", "password");
+
+		// aliceは2つのプロジェクトが取得できる
+		{
+			const response = await request(app)
+				.get(`/v1/me/projects`)
+				.set("X-Requested-With", "test")
+				.set("Cookie", aliceCookie);
+
+			expect(response.status).toEqual(200);
+			expect(response.body.length).toEqual(2);
+			expect(response.body).toEqual([
+				{
+					id: expect.any(String),
+					name: "aliceProject",
+					description: "private project of Alice",
+					accessLevel: "private",
+					type: "personal",
+					createdAt: 1663513200000,
+				},
+				{
+					id: expect.any(String),
+					name: "aliceProject",
+					description: "public project of Alice",
+					accessLevel: "public",
+					type: "personal",
+					createdAt: 1663513200000,
+				},
+			]);
+		}
+
+		// bobは1つもプロジェクトを作成していないので取得できない
+		{
+			const response = await request(app)
+				.get(`/v1/me/projects`)
+				.set("X-Requested-With", "test")
+				.set("Cookie", bobCookie);
+
+			expect(response.status).toEqual(200);
+			expect(response.body.length).toEqual(0);
+			expect(response.body).toEqual([]);
 		}
 	});
 }

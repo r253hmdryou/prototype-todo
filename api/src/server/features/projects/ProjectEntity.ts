@@ -2,6 +2,7 @@ import { Entity } from "common/entity";
 import { generateUuid } from "libs/utils";
 
 import { UserEntity } from "features/users/UserEntity";
+import { ProjectModel, AccessLevel as ModelAccessLevel, Type as ModelType } from "models/ProjectModel";
 
 export const enum AccessLevel {
 	PRIVATE = "private",
@@ -13,11 +14,11 @@ export const enum Type {
 }
 
 type PropertiesEssential = {
-	readonly user: UserEntity;
 	readonly name: string;
 	readonly description: string;
 	readonly accessLevel: AccessLevel;
 	readonly type: Type;
+	readonly userId: number | null;
 }
 
 type Properties = {
@@ -27,8 +28,9 @@ type Properties = {
 	description: string;
 	accessLevel: AccessLevel;
 	type: Type;
+	userId: number | null;
 
-	readonly user: UserEntity;
+	readonly user?: UserEntity | null;
 
 	readonly createdAt: number;
 	deletedAt: number | null;
@@ -36,31 +38,59 @@ type Properties = {
 
 export class ProjectEntity extends Entity<Properties> {
 
-	static factory(properties: PropertiesEssential): ProjectEntity {
+	static factory(properties: PropertiesEssential, user?: UserEntity): ProjectEntity {
 		return new ProjectEntity({
 			uuid: generateUuid(),
 			name: properties.name,
 			description: properties.description,
 			accessLevel: properties.accessLevel,
 			type: properties.type,
+			userId: properties.userId,
 
-			user: properties.user,
+			user: user,
 
 			createdAt: Date.now(),
 			deletedAt: null,
 		});
 	}
 
-	// static fromModel(model: ProjectModel): ProjectEntity {
-	// 	return new ProjectEntity({
-	// 		id: model.id,
-	// 		uuid: model.uuid,
-	// 		email: model.email,
-	// 		password: model.password,
-	// 		createdAt: model.createdAt,
-	// 		deletedAt: model.deletedAt,
-	// 	});
-	// }
+	static fromModel(model: ProjectModel): ProjectEntity {
+		return new ProjectEntity({
+			id: model.id,
+			uuid: model.uuid,
+			name: model.name,
+			description: model.description,
+			accessLevel: ProjectEntity.fromModel$accessLevel(model.accessLevel),
+			type: ProjectEntity.fromModel$type(model.type),
+			userId: model.userId,
+
+			createdAt: model.createdAt,
+			deletedAt: model.deletedAt,
+
+			user: model.user && UserEntity.fromModel(model.user),
+		});
+	}
+
+	static fromModel$accessLevel(accessLevel: ModelAccessLevel): AccessLevel {
+		switch(accessLevel) {
+
+		case ModelAccessLevel.PRIVATE:
+			return AccessLevel.PRIVATE;
+
+		case ModelAccessLevel.PUBLIC:
+			return AccessLevel.PUBLIC;
+
+		}
+	}
+
+	static fromModel$type(type: ModelType): Type {
+		switch(type) {
+
+		case ModelType.PERSONAL:
+			return Type.PERSONAL;
+
+		}
+	}
 
 	get id(): number {
 		return this.getPropertiyOrRaiseIfUndefined(this.properties.id);
@@ -86,8 +116,12 @@ export class ProjectEntity extends Entity<Properties> {
 		return this.properties.type;
 	}
 
-	get user(): UserEntity {
-		return this.properties.user;
+	get userId(): number | null {
+		return this.properties.userId;
+	}
+
+	get user(): UserEntity | null {
+		return this.getPropertiyOrRaiseIfUndefined(this.properties.user);
 	}
 
 	get createdAt(): number {

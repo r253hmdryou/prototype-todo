@@ -197,6 +197,23 @@ export namespace Me {
     export type RequestHeaders = { "X-Requested-With": string };
     export type ResponseBody = UserForMe;
   }
+  /**
+   * @description 自分の個人プロジェクトの一覧
+   * @tags projects
+   * @name GetMyPersonalProjects
+   * @summary 自分の個人プロジェクトの一覧
+   * @request GET:/me/projects
+   * @secure
+   * @response `200` `(PersonalProject)[]` Successful operation
+   * @response `401` `any`
+   */
+  export namespace GetMyPersonalProjects {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = { "X-Requested-With": string };
+    export type ResponseBody = PersonalProject[];
+  }
 }
 
 export namespace Projects {

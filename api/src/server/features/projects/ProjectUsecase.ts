@@ -6,6 +6,15 @@ import * as ProjectRepository from "./ProjectRepository";
 import { UserEntity } from "features/users/UserEntity";
 
 /**
+ * 自身のすべての個人プロジェクトを取得する
+ * @param user ユーザー
+ * @returns プロジェクト
+ */
+export async function findAllMyPersonal(user: UserEntity): Promise<ProjectEntity[]> {
+	return await ProjectRepository.findAllMyPersonal(user);
+}
+
+/**
  * AccessLevelを文字列から変換する
  * @param accessLevelString AccessLevelString
  * @returns AccessLevel
@@ -51,8 +60,8 @@ export async function create(user: UserEntity, name: string, description: string
 		description: description,
 		accessLevel: accessLevel,
 		type: type,
-		user: user,
-	});
+		userId: user.id,
+	}, user);
 
 	await ProjectRepository.save(project);
 	return project;

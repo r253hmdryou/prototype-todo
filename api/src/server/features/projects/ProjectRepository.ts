@@ -1,5 +1,43 @@
+import { UserEntity } from "features/users/UserEntity";
 import { AccessLevel, ProjectModel, Type } from "models/ProjectModel";
 import { ProjectEntity, AccessLevel as EntityAccessLevel, Type as EntityType } from "./ProjectEntity";
+
+/**
+ * 自身のすべての個人プロジェクトを取得する
+ * @param user ユーザー
+ * @returns プロジェクト
+ */
+export async function findAllMyPersonal(user: UserEntity): Promise<ProjectEntity[]> {
+	const models = await ProjectModel.findAll({
+		where: {
+			...buildTypeCondition(EntityType.PERSONAL),
+			...buildUserCondition(user),
+		},
+	});
+	return models.map(ProjectEntity.fromModel);
+}
+
+/**
+ * Typeの条件を構築する
+ * @param type Type
+ * @returns Typeの条件
+ */
+function buildTypeCondition(type: EntityType): { type: Type } {
+	return {
+		type: toModel$type(type),
+	};
+}
+
+/**
+ * 作成者の条件を構築する
+ * @param user ユーザー
+ * @returns 作成者の条件
+ */
+function buildUserCondition(user: UserEntity): { userId: number } {
+	return {
+		userId: user.id,
+	};
+}
 
 /**
  * エンティティーを永続化する
@@ -23,7 +61,7 @@ function toModel(project: ProjectEntity): ProjectModel {
 		description: project.description,
 		accessLevel: toModel$accessLevel(project.accessLevel),
 		type: toModel$type(project.type),
-		userId: project.user.id,
+		userId: project.userId,
 		createdAt: project.createdAt,
 		deletedAt: project.deletedAt,
 	});
