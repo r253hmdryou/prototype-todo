@@ -1,12 +1,10 @@
 import express from "express";
 
 import { routingHandler } from "libs/handler";
-
 import * as services from "services/v1/users";
 
-import * as validators from "validators/v1/users";
 import { paramUserId } from "validators/common";
-import { findAuthorizedUser } from "features/users/UserUsecase";
+import * as validators from "validators/v1/users";
 import { Users } from "types/api";
 
 /**
@@ -44,9 +42,7 @@ async function post(req: express.Request, res: express.Response): Promise<void> 
  * @returns void
  */
 async function getMe(req: express.Request, res: express.Response): Promise<void> {
-	const user = await findAuthorizedUser(req);
-	const resBody: Users.GetMyUser.ResponseBody = services.getMe(user);
-
+	const resBody: Users.GetMyUser.ResponseBody = await services.getMe(req.sessionID);
 	res
 		.status(200)
 		.send(resBody);

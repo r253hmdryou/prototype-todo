@@ -1,5 +1,5 @@
-import { SessionModel } from "common/models/SessionModel";
-import { UserModel } from "common/models/UserModel";
+import { SessionModel } from "models/SessionModel";
+import { UserModel } from "models/UserModel";
 import { UserEntity } from "./UserEntity";
 
 /**

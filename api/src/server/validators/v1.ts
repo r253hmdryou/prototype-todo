@@ -52,9 +52,9 @@ function assignUserValidationError(key: Key | undefined, rule: RULE): ErrorMessa
 	case "password":
 		switch(rule) {
 		case vs.RULE.MIN_LENGTH:
-			return errorMessages.user.param.password.minLength(config.user.password.minLength);
+			return errorMessages.user.param.password.minLength;
 		case vs.RULE.MAX_LENGTH:
-			return errorMessages.user.param.password.maxLength(config.user.password.maxLength);
+			return errorMessages.user.param.password.maxLength;
 		default:
 			return errorMessages.user.param.password.default;
 		}

@@ -1,4 +1,6 @@
 import { STATUS } from "./AppError";
+import { config } from "libs/config";
+import { project } from "libs/validator";
 
 export interface ErrorMessage {
 	status: STATUS,
@@ -46,6 +48,50 @@ export const errorMessages = {
 			message: "Internal Server Error",
 		},
 	},
+	project: {
+		create: {
+			code: "projectCreate",
+			message: "Failed to create project",
+		},
+		param: {
+			name: {
+				default: {
+					status: STATUS.BAD_REQUEST,
+					code: "invalidProjectParamName",
+					message: "Invalid name",
+				},
+				empty: {
+					status: STATUS.BAD_REQUEST,
+					code: "invalidProjectParamNameEmpty",
+					message: "Invalid name, name is empty",
+				},
+				maxLength: {
+					status: STATUS.BAD_REQUEST,
+					code: "invalidProjectParamNameMaxLength",
+					message: `Invalid name, maximum length is ${project.name.maxLength}`,
+				},
+			},
+			description: {
+				default: {
+					status: STATUS.BAD_REQUEST,
+					code: "invalidProjectParamDescription",
+					message: "Invalid description",
+				},
+				maxLength: {
+					status: STATUS.BAD_REQUEST,
+					code: "invalidProjectParamDescriptionMaxLength",
+					message: `Invalid description, maximum length is ${project.description.maxLength}`,
+				},
+			},
+			accessLevel: {
+				default: {
+					status: STATUS.BAD_REQUEST,
+					code: "invalidProjectParamAccessLevel",
+					message: "Invalid accessLevel. accessLevel must be one of 'public', 'private'",
+				},
+			},
+		},
+	},
 	user: {
 		create: {
 			code: "userCreate",
@@ -91,16 +137,16 @@ export const errorMessages = {
 					code: "invalidUserParamPassword",
 					message: "Invalid password",
 				},
-				minLength: (minLength: number): ErrorMessage => ({
+				minLength: {
 					status: STATUS.BAD_REQUEST,
 					code: "invalidUserParamPasswordMinLength",
-					message: `Invalid password. Minimum length is ${minLength}`,
-				}),
-				maxLength: (maxLength: number): ErrorMessage => ({
+					message: `Invalid password. Minimum length is ${config.user.password.minLength}`,
+				},
+				maxLength: {
 					status: STATUS.BAD_REQUEST,
 					code: "invalidUserParamPasswordMaxLength",
-					message: `Invalid password. Maximum length is ${maxLength}`,
-				}),
+					message: `Invalid password. Maximum length is ${config.user.password.maxLength}`,
+				},
 			},
 		},
 	},

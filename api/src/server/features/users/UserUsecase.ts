@@ -35,11 +35,11 @@ async function findByEmail(email: string): Promise<UserEntity | null> {
 /**
  * find authorized user
  * by sessionID
- * @param req request
+ * @param sessionID sessionID
  * @returns user
  */
-export async function findAuthorizedUser(req: express.Request): Promise<UserEntity> {
-	const user = await UserRepository.findBySessionId(req.sessionID);
+export async function findAuthorizedUser(sessionID: string): Promise<UserEntity> {
+	const user = await UserRepository.findBySessionId(sessionID);
 	if(user === null) {
 		AppError.raise(errorMessages.general.unauthorized);
 	}
@@ -105,7 +105,7 @@ export async function login(req: express.Request, email: string, password: strin
 	if(user === null || !user.isAvailable()) {
 		AppError.raise(errorMessages.user.login);
 	}
-	if(!user.verifyPassword(password)) {
+	if(!await user.verifyPassword(password)) {
 		AppError.raise(errorMessages.user.login);
 	}
 
@@ -115,11 +115,11 @@ export async function login(req: express.Request, email: string, password: strin
 
 /**
  * disable cookie to logout
- * @param req request
+ * @param sessionId sessionId
  * @returns void
  */
-export async function logout(req: express.Request): Promise<void> {
-	await SessionUsecase.remove(req);
+export async function logout(sessionId: string): Promise<void> {
+	await SessionUsecase.remove(sessionId);
 }
 
 /**

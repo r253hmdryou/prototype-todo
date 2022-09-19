@@ -69,12 +69,3 @@ UserModel.init({
 		},
 	],
 });
-
-UserModel.hasMany(SessionModel, {
-	foreignKey: "userId",
-});
-
-SessionModel.belongsTo(UserModel, {
-	foreignKey: "userId",
-	targetKey: "id",
-});

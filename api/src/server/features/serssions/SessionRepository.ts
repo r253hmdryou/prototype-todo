@@ -1,5 +1,5 @@
 import { Cookie } from "express-session";
-import { SessionModel } from "common/models/SessionModel";
+import { SessionModel } from "models/SessionModel";
 import { AppError } from "libs/error/AppError";
 import { errorMessages } from "libs/error/messages";
 

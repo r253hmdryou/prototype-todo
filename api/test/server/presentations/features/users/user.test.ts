@@ -1,28 +1,15 @@
 import request from "supertest";
 import app from "app";
 
-import { createInMemoryDatabase, dropDatabase } from "@test/libs/sequelize";
-import { UserModel } from "common/models/UserModel";
+import { UserModel } from "models/UserModel";
+import { initializeTest } from "@test/libs/initialize";
 
 {
-	initialize();
+	initializeTest();
 
-	describe("create user and login", testCreateUser);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let sequelize: any = null;
-/**
- * initialize
- * @returns void
- */
-function initialize(): void {
-	beforeAll(async() => {
-		sequelize = await createInMemoryDatabase();
-	});
-	afterAll(async() => {
-		await dropDatabase(sequelize);
-	});
+	describe("ユーザーの作成", testCreateUser);
+	describe("ユーザーのログイン", testLogin);
+	describe("自分のユーザー情報の取得", testGetMe);
 }
 
 /**
@@ -30,9 +17,8 @@ function initialize(): void {
  * @returns void
  */
 function testCreateUser(): void {
-	test("success: create user", async() => {
-		let cookie = null;
-		// create user request
+	test("ユーザーが作成できる", async() => {
+		// ユーザーを作成
 		{
 			const response = await request(app)
 				.post(`/v1/users`)
@@ -43,11 +29,10 @@ function testCreateUser(): void {
 
 			// always 201 if email is valid
 			expect(response.status).toEqual(201);
-			cookie = response.header["set-cookie"];
 		}
 
 		let userId = "";
-		// check database directly
+		// DBを直接見てUUIDを確認
 		{
 			const models = await UserModel.findAll();
 			expect(models.length).toEqual(1);
@@ -56,29 +41,7 @@ function testCreateUser(): void {
 			userId = models[0].uuid;
 		}
 
-		// cannot create same email
-		{
-			const response = await request(app)
-				.post(`/v1/users`)
-				.set("X-Requested-With", "test")
-				.send({
-					email: "test@example.com",
-				});
-
-			// always 201 if email is valid
-			expect(response.status).toEqual(201);
-		}
-
-		// check database directly - not changed
-		{
-			const models = await UserModel.findAll();
-			expect(models.length).toEqual(1);
-			expect(models[0].uuid).toEqual(userId);
-			expect(models[0].email).toEqual("test@example.com");
-			expect(models[0].password).toBeNull();
-		}
-
-		// signup
+		// パスワード登録によるユーザー作成の完了
 		{
 			const response = await request(app)
 				.post(`/v1/users/${userId}`)
@@ -93,77 +56,64 @@ function testCreateUser(): void {
 				email: "test@example.com",
 			});
 		}
+	});
 
-		// check database directly - password set
-		{
-			const models = await UserModel.findAll();
-			expect(models.length).toEqual(1);
-			expect(models[0].uuid).toEqual(userId);
-			expect(models[0].email).toEqual("test@example.com");
-			expect(models[0].password).toMatch("$argon2id$v=19$m=4096,t=3,p=1$");
-		}
-
-		// get my user - not logged in
+	test("同一のメールアドレスで何度リクエストしてもUUIDは変わらない", async() => {
+		// ユーザーを作成
 		{
 			const response = await request(app)
-				.get(`/v1/users/me`)
+				.post(`/v1/users`)
 				.set("X-Requested-With", "test")
-				.set("Cookie", cookie);
-
-			expect(response.status).toEqual(401);
-			expect(response.body).toEqual({
-				code: "unauthorized",
-				message: "Unauthorized",
-			});
-		}
-
-		// login
-		{
-			const response = await request(app)
-				.post(`/v1/login`)
-				.set("X-Requested-With", "test")
-				.set("Cookie", cookie)
 				.send({
-					email: "test@example.com",
-					password: "password",
+					email: "bob@example.com",
 				});
 
 			expect(response.status).toEqual(201);
 		}
 
-		// get my user
+		let userId = "";
+		// DBを直接見てUUIDを確認
 		{
-			const response = await request(app)
-				.get(`/v1/users/me`)
-				.set("X-Requested-With", "test")
-				.set("Cookie", cookie);
-
-			expect(response.status).toEqual(200);
+			const model = await UserModel.findOne({
+				where: {
+					email: "bob@example.com",
+				},
+			});
+			expect(model).not.toBeNull();
+			expect(model?.email).toEqual("bob@example.com");
+			expect(model?.password).toBeNull();
+			userId = model?.uuid || "";
 		}
 
-		// logout
+		// ユーザーを作成 - もう一度同じメールアドレスを使用
 		{
 			const response = await request(app)
-				.post(`/v1/logout`)
+				.post(`/v1/users`)
 				.set("X-Requested-With", "test")
-				.set("Cookie", cookie);
+				.send({
+					email: "bob@example.com",
+				});
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(201);
 		}
 
-		// get my user
+		// DBを直接見てUUIDを確認 - UUIDは変わらない
 		{
-			const response = await request(app)
-				.get(`/v1/users/me`)
-				.set("X-Requested-With", "test")
-				.set("Cookie", cookie);
+			const model = await UserModel.findOne({
+				where: {
+					email: "bob@example.com",
+				},
+			});
+			expect(model).not.toBeNull();
+			expect(model?.email).toEqual("bob@example.com");
+			expect(model?.password).toBeNull();
 
-			expect(response.status).toEqual(401);
+			expect(model?.uuid).toEqual(userId);
 		}
 	});
 
-	test("error: create user", async() => {
-		// parameter error - invalid email
+	test("ユーザー作成のパラメーターエラー", async() => {
+		// 無効なメールアドレス
 		{
 			const response = await request(app)
 				.post(`/v1/users`)
@@ -185,7 +135,7 @@ function testCreateUser(): void {
 			});
 		}
 
-		// parameter error - no email
+		// メールアドレスを指定していない
 		{
 			const response = await request(app)
 				.post(`/v1/users`)
@@ -206,10 +156,11 @@ function testCreateUser(): void {
 				],
 			});
 		}
+	});
 
-		// cannot signup again
-		let userId = "";
-		// get userId
+	test("既に登録済みのユーザーではsignupできない", async() => {
+		let userId: string | undefined = "";
+		// 登録済みユーザーのIDを取得
 		{
 			const model = await UserModel.findOne({
 				where: {
@@ -217,12 +168,12 @@ function testCreateUser(): void {
 				},
 			});
 			expect(model).not.toBeNull();
-			if(model === null) {
-				throw "error";
-			}
-			expect(model.password).toMatch("$argon2id"); // password set
-			userId = model.uuid;
+			expect(model?.password).toMatch("$argon2id"); // パスワードがセットされている
+			expect(model?.uuid).toEqual(expect.any(String));
+			userId = model?.uuid;
 		}
+
+		// signup
 		{
 			const response = await request(app)
 				.post(`/v1/users/${userId}`)
@@ -237,8 +188,38 @@ function testCreateUser(): void {
 				message: "User already signed up",
 			});
 		}
+	});
 
-		// parameter error
+	test("signupのパラメーターエラー", async() => {
+		// ユーザーを作成
+		{
+			const response = await request(app)
+				.post(`/v1/users`)
+				.set("X-Requested-With", "test")
+				.send({
+					email: "signup400@example.com",
+				});
+
+			// always 201 if email is valid
+			expect(response.status).toEqual(201);
+		}
+
+		let userId: string | undefined = "";
+		// DBを直接見てUUIDを確認
+		{
+			const model = await UserModel.findOne({
+				where: {
+					email: "signup400@example.com",
+				},
+			});
+			expect(model).not.toBeNull();
+			expect(model?.email).toEqual("signup400@example.com");
+			expect(model?.password).toBeNull();
+
+			userId = model?.uuid;
+		}
+
+		// パスワードを指定していない
 		{
 			const response = await request(app)
 				.post(`/v1/users/${userId}`)
@@ -260,7 +241,7 @@ function testCreateUser(): void {
 			});
 		}
 
-		// parameter error - min length
+		// 最小文字数要件を満たしていない
 		{
 			const response = await request(app)
 				.post(`/v1/users/${userId}`)
@@ -282,7 +263,7 @@ function testCreateUser(): void {
 			});
 		}
 
-		// parameter error - max length
+		// 最大文字数要件を満たしていない
 		{
 			const response = await request(app)
 				.post(`/v1/users/${userId}`)
@@ -304,7 +285,7 @@ function testCreateUser(): void {
 			});
 		}
 
-		// if 100, okay(error in usecase(403) through validator(400))
+		// 境界値チェック、100文字ならOK
 		{
 			const response = await request(app)
 				.post(`/v1/users/${userId}`)
@@ -313,7 +294,112 @@ function testCreateUser(): void {
 					password: "a".repeat(100),
 				});
 
-			expect(response.status).toEqual(403);
+			expect(response.status).toEqual(201);
+		}
+
+		// 登録 - 存在しないユーザー
+		{
+			const response = await request(app)
+				.post(`/v1/users/601407ee-4ed3-4271-80b9-89c7f805e53b`)
+				.set("X-Requested-With", "test")
+				.send({
+					password: "password",
+				});
+
+			expect(response.status).toEqual(404);
+			expect(response.body).toEqual({
+				code: "userIdNotFound",
+				message: "User not found. id: 601407ee-4ed3-4271-80b9-89c7f805e53b",
+			});
+		}
+
+		// 登録 - UUID形式ではない
+		{
+			const response = await request(app)
+				.post(`/v1/users/601407ee`)
+				.set("X-Requested-With", "test")
+				.send({
+					password: "password",
+				});
+
+			expect(response.status).toEqual(404);
+			expect(response.body).toEqual({
+				code: "userIdNotFound",
+				message: "User not found. id: 601407ee",
+			});
+		}
+	});
+}
+
+/**
+ * ユーザーのログイン
+ * @returns void
+ */
+function testLogin(): void {
+	test("正常にログインできる", async() => {
+		// login
+		{
+			const response = await request(app)
+				.post(`/v1/login`)
+				.set("X-Requested-With", "test")
+				.send({
+					email: "test@example.com",
+					password: "password",
+				});
+
+			expect(response.status).toEqual(201);
+		}
+	});
+
+	test("ログイン失敗", async() => {
+		let cookie = "";
+		// login - メールアドレスが異なる
+		{
+			const response = await request(app)
+				.post(`/v1/login`)
+				.set("X-Requested-With", "test")
+				.send({
+					email: "test@example.commm",
+					password: "password",
+				});
+
+			expect(response.status).toEqual(401);
+			expect(response.body).toEqual({
+				code: "userLogin",
+				message: "Failed to login user",
+			});
+		}
+
+		// login - パスワードが異なる
+		{
+			const response = await request(app)
+				.post(`/v1/login`)
+				.set("X-Requested-With", "test")
+				.send({
+					email: "test@example.com",
+					password: "passworddd",
+				});
+
+			expect(response.status).toEqual(401);
+			expect(response.body).toEqual({
+				code: "userLogin",
+				message: "Failed to login user",
+			});
+			cookie = response.header["set-cookie"];
+		}
+
+		// get my user - not logged in cookie
+		{
+			const response = await request(app)
+				.get(`/v1/users/me`)
+				.set("X-Requested-With", "test")
+				.set("Cookie", cookie);
+
+			expect(response.status).toEqual(401);
+			expect(response.body).toEqual({
+				code: "unauthorized",
+				message: "Unauthorized",
+			});
 		}
 
 		// login - parameter error
@@ -369,7 +455,72 @@ function testCreateUser(): void {
 				],
 			});
 		}
+	});
+}
 
+/**
+ * 自分のユーザー情報の取得
+ * @returns void
+ */
+function testGetMe(): void {
+	test("自分のユーザー情報の取得", async() => {
+		let cookie = "";
+
+		// ログイン
+		{
+			const response = await request(app)
+				.post(`/v1/login`)
+				.set("X-Requested-With", "test")
+				.set("Cookie", cookie)
+				.send({
+					email: "test@example.com",
+					password: "password",
+				});
+
+			expect(response.status).toEqual(201);
+			cookie = response.header["set-cookie"];
+		}
+
+		// ユーザー情報の取得
+		{
+			const response = await request(app)
+				.get(`/v1/users/me`)
+				.set("X-Requested-With", "test")
+				.set("Cookie", cookie);
+
+			expect(response.status).toEqual(200);
+			expect(response.body).toEqual({
+				id: expect.any(String),
+				email: "test@example.com",
+			});
+		}
+
+		// logout
+		{
+			const response = await request(app)
+				.post(`/v1/logout`)
+				.set("X-Requested-With", "test")
+				.set("Cookie", cookie);
+
+			expect(response.status).toEqual(200);
+		}
+
+		// get my user
+		{
+			const response = await request(app)
+				.get(`/v1/users/me`)
+				.set("X-Requested-With", "test")
+				.set("Cookie", cookie);
+
+			expect(response.status).toEqual(401);
+			expect(response.body).toEqual({
+				code: "unauthorized",
+				message: "Unauthorized",
+			});
+		}
+	});
+
+	test("ログインしていなければ情報を取得できない", async() => {
 		let cookie = "";
 		// login - parameter error
 		{

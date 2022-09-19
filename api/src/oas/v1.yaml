@@ -69,6 +69,53 @@ components:
         * Must be at most 200 characters long
       type: string
       example: "password"
+    createdAt:
+      description: "作成日時[ms]"
+      type: number
+      format: integer
+      example: "1663455600000"
+
+    projectAccessLevel:
+      description: "公開範囲"
+      type: string
+      enum:
+      - public
+      - private
+      example: "public"
+
+    ProjectCore:
+      type: object
+      required:
+      - name
+      - description
+      - accessLevel
+      properties:
+        name:
+          description: "プロジェクト名"
+          type: string
+          maximum: 20
+          minimum: 1
+          example: "Project Name"
+        description:
+          description: "プロジェクトの説明"
+          type: string
+          maximum: 1000
+          minimum: 0
+          example: "Project Description"
+        accessLevel:
+          $ref: "#/components/schemas/projectAccessLevel"
+    Project:
+      allOf:
+      - $ref: "#/components/schemas/ProjectCore"
+      - type: object
+        required:
+        - id
+        - createdAt
+        properties:
+          id:
+            $ref: "#/components/schemas/Id"
+          createdAt:
+            $ref: "#/components/schemas/createdAt"
 
     UserForMe:
       type: object
@@ -105,6 +152,10 @@ components:
       properties:
         password:
           $ref: "#/components/schemas/password"
+
+    CreateProjectRequest:
+      allOf:
+      - $ref: "#/components/schemas/ProjectCore"
 
 paths:
   /hello:
@@ -170,6 +221,30 @@ paths:
           description: "Successful operation"
         401:
           $ref: "#/components/responses/UnauthorizedError"
+
+  /projects:
+    post:
+      summary: "プロジェクトの作成"
+      description: "プロジェクトの作成"
+      operationId: "createProject"
+      tags:
+      - projects
+      security:
+      - cookieAuth: []
+      parameters:
+      - $ref: "#/components/parameters/CSRFHeader"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        201:
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
 
   /users:
     post:

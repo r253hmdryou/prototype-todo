@@ -1,7 +1,7 @@
 import argon2 from "argon2";
 import { generateUuid } from "libs/utils";
 import { Entity } from "common/entity";
-import { UserModel } from "common/models/UserModel";
+import { UserModel } from "models/UserModel";
 
 type PropertiesEssential = {
 	readonly email: string;

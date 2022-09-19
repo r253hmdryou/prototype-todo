@@ -30,6 +30,45 @@ export type Email = string;
  */
 export type Password = string;
 
+/**
+ * 作成日時[ms]
+ * @format integer
+ * @example 1663455600000
+ */
+export type CreatedAt = number;
+
+/**
+ * 公開範囲
+ * @example public
+ */
+export enum ProjectAccessLevel {
+  Public = "public",
+  Private = "private",
+}
+
+export interface ProjectCore {
+  /**
+   * プロジェクト名
+   * @min 1
+   * @max 20
+   * @example Project Name
+   */
+  name: string;
+
+  /**
+   * プロジェクトの説明
+   * @min 0
+   * @max 1000
+   * @example Project Description
+   */
+  description: string;
+
+  /** 公開範囲 */
+  accessLevel: ProjectAccessLevel;
+}
+
+export type Project = ProjectCore & { id: Id; createdAt: CreatedAt };
+
 export interface UserForMe {
   /** ID */
   id: Id;
@@ -63,6 +102,8 @@ export interface SignUpRequest {
    */
   password: Password;
 }
+
+export type CreateProjectRequest = ProjectCore;
 
 export namespace Hello {
   /**
@@ -120,6 +161,25 @@ export namespace Logout {
     export type RequestBody = never;
     export type RequestHeaders = { "X-Requested-With": string };
     export type ResponseBody = void;
+  }
+}
+
+export namespace Projects {
+  /**
+   * @description プロジェクトの作成
+   * @tags projects
+   * @name CreateProject
+   * @summary プロジェクトの作成
+   * @request POST:/projects
+   * @secure
+   * @response `201` `Project` Successful operation
+   */
+  export namespace CreateProject {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateProjectRequest;
+    export type RequestHeaders = { "X-Requested-With": string };
+    export type ResponseBody = Project;
   }
 }
 

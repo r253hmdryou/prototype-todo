@@ -46,3 +46,12 @@ SessionModel.init({
 	underscored: true,
 	timestamps: false,
 });
+
+SessionModel.belongsTo(UserModel, {
+	foreignKey: "userId",
+	targetKey: "id",
+});
+
+UserModel.hasMany(SessionModel, {
+	foreignKey: "userId",
+});

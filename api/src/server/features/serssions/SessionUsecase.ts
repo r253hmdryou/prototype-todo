@@ -19,9 +19,9 @@ export async function create(req: express.Request, userId: number): Promise<void
 
 /**
  * remove session record
- * @param req request
+ * @param sessionId sessionId
  * @returns void
  */
-export async function remove(req: express.Request): Promise<void> {
-	await SessionRepository.remove(req.sessionID);
+export async function remove(sessionId: string): Promise<void> {
+	await SessionRepository.remove(sessionId);
 }

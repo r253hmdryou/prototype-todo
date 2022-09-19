@@ -3,6 +3,7 @@ import express from "express";
 import { routingHandler } from "libs/handler";
 
 import {routing as routingUsers} from "./v1/users";
+import {routing as routingProjects} from "./v1/projects";
 
 import * as services from "services/v1";
 import { Login } from "types/api";
@@ -15,6 +16,7 @@ import * as validators from "validators/v1";
 export function routing(): express.Router {
 	return express.Router()
 		.use("/users", routingUsers())
+		.use("/projects", routingProjects())
 		.get("/hello", routingHandler(getHello))
 		.post("/login", routingHandler(postLogin))
 		.post("/logout", routingHandler(postLogout));
@@ -56,7 +58,7 @@ async function postLogin(req: express.Request, res: express.Response): Promise<v
  * @returns void
  */
 async function postLogout(req: express.Request, res: express.Response): Promise<void> {
-	await services.postLogout(req);
+	await services.postLogout(req.sessionID);
 	res
 		.status(200)
 		.send();

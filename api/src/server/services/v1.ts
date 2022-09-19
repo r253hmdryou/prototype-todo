@@ -17,9 +17,9 @@ export async function postLogin(req: express.Request, email: string, password: s
 
 /**
  * POST /v1/logout
- * @param req request
+ * @param sessionId sessionId
  * @returns void
  */
-export async function postLogout(req: express.Request): Promise<void> {
-	await UserUsecase.logout(req);
+export async function postLogout(sessionId: string): Promise<void> {
+	await UserUsecase.logout(sessionId);
 }
