@@ -22,7 +22,7 @@ function testCreateProject(): void {
 		// プロジェクトを作成
 		{
 			const response = await request(app)
-				.post(`/v1/projects`)
+				.post(`/v1/me/projects`)
 				.set("X-Requested-With", "test")
 				.send({
 					name: "project",
@@ -43,7 +43,7 @@ function testCreateProject(): void {
 		// プロジェクトを作成 - private
 		mockDate(1663513200000, async() => {
 			const response = await request(app)
-				.post(`/v1/projects`)
+				.post(`/v1/me/projects`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", aliceCookie)
 				.send({
@@ -67,7 +67,7 @@ function testCreateProject(): void {
 		// プロジェクトを作成 - public
 		mockDate(1663513200000, async() => {
 			const response = await request(app)
-				.post(`/v1/projects`)
+				.post(`/v1/me/projects`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", aliceCookie)
 				.send({
@@ -95,7 +95,7 @@ function testCreateProject(): void {
 		// プロジェクトを作成 - パラメーター無し
 		{
 			const response = await request(app)
-				.post(`/v1/projects`)
+				.post(`/v1/me/projects`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", aliceCookie);
 
@@ -127,7 +127,7 @@ function testCreateProject(): void {
 		// プロジェクトを作成 - 規定の文字数以上 / 許可されていないアクセスレベル
 		{
 			const response = await request(app)
-				.post(`/v1/projects`)
+				.post(`/v1/me/projects`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", aliceCookie)
 				.send({
@@ -165,7 +165,7 @@ function testCreateProject(): void {
 		// プロジェクトを作成 - nameが空文字
 		{
 			const response = await request(app)
-				.post(`/v1/projects`)
+				.post(`/v1/me/projects`)
 				.set("X-Requested-With", "test")
 				.set("Cookie", aliceCookie)
 				.send({

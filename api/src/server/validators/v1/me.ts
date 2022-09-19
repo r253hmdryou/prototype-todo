@@ -9,7 +9,7 @@ import { RULE } from "../common";
 import { Key } from "value-schema/dist/libs/types";
 import { project } from "libs/validator";
 
-const schemaBodyPost = {
+const schemaBodyPostProjects = {
 	name: vs.string({
 		maxLength: project.name.maxLength,
 	}),
@@ -31,10 +31,10 @@ const schemaBodyPost = {
  * @param req request
  * @returns RequestBody
  */
-export function BodyPost(req: express.Request): Projects.CreateProject.RequestBody {
+export function BodyPostProjects(req: express.Request): Projects.CreateProject.RequestBody {
 	const appError = AppError.factory(errorMessages.project.create);
 
-	return vs.applySchemaObject(schemaBodyPost, req.body, (error) => {
+	return vs.applySchemaObject(schemaBodyPostProjects, req.body, (error) => {
 		const key = error.keyStack.shift();
 		appError.addError(assignError(key, error.rule));
 	}, () => {

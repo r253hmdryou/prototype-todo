@@ -54,11 +54,6 @@ export enum ProjectTypePersonal {
   Personal = "personal",
 }
 
-/**
- * プロジェクトの種類
- */
-export type ProjectType = ProjectTypePersonal;
-
 export interface ProjectCore {
   /**
    * プロジェクト名
@@ -118,7 +113,7 @@ export interface SignUpRequest {
   password: Password;
 }
 
-export type CreateProjectRequest = ProjectCore & { type: ProjectType };
+export type CreateProjectRequest = ProjectCore;
 
 export namespace Hello {
   /**
@@ -214,24 +209,21 @@ export namespace Me {
     export type RequestHeaders = { "X-Requested-With": string };
     export type ResponseBody = PersonalProject[];
   }
-}
-
-export namespace Projects {
   /**
-   * @description プロジェクトの作成
+   * @description 個人プロジェクトの作成
    * @tags projects
-   * @name CreateProject
-   * @summary プロジェクトの作成
-   * @request POST:/projects
+   * @name CreatePersonalProject
+   * @summary 個人プロジェクトの作成
+   * @request POST:/me/projects
    * @secure
-   * @response `201` `Project` Successful operation
+   * @response `201` `PersonalProject` Successful operation
    */
-  export namespace CreateProject {
+  export namespace CreatePersonalProject {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = CreateProjectRequest;
     export type RequestHeaders = { "X-Requested-With": string };
-    export type ResponseBody = Project;
+    export type ResponseBody = PersonalProject;
   }
 }
 

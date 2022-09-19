@@ -88,10 +88,6 @@ components:
       enum:
       - personal
       example: "personal"
-    projectType:
-      description: "プロジェクトの種類"
-      oneOf:
-      - $ref: "#/components/schemas/projectTypePersonal"
 
     ProjectCore:
       type: object
@@ -172,12 +168,6 @@ components:
     CreateProjectRequest:
       allOf:
       - $ref: "#/components/schemas/ProjectCore"
-      - type: object
-        required:
-        - type
-        properties:
-          type:
-            $ref: "#/components/schemas/projectType"
 
 paths:
   /hello:
@@ -286,12 +276,10 @@ paths:
                   $ref: "#/components/schemas/PersonalProject"
         401:
           $ref: "#/components/responses/UnauthorizedError"
-
-  /projects:
     post:
-      summary: "プロジェクトの作成"
-      description: "プロジェクトの作成"
-      operationId: "createProject"
+      summary: "個人プロジェクトの作成"
+      description: "個人プロジェクトの作成"
+      operationId: "createPersonalProject"
       tags:
       - projects
       security:
@@ -309,7 +297,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Project"
+                $ref: "#/components/schemas/PersonalProject"
 
   /users:
     post:

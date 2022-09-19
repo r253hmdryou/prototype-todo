@@ -3,7 +3,8 @@ import express from "express";
 import { routingHandler } from "libs/handler";
 import * as services from "services/v1/me";
 
-import { Me } from "types/api";
+import * as validators from "validators/v1/me";
+import { Me, Projects } from "types/api";
 
 /**
  * routing me
@@ -12,7 +13,8 @@ import { Me } from "types/api";
 export function routing(): express.Router {
 	return express.Router()
 		.get("/", routingHandler(get))
-		.get("/projects", routingHandler(getProjects));
+		.get("/projects", routingHandler(getProjects))
+		.post("/projects", routingHandler(postProjects));
 }
 
 /**
@@ -40,5 +42,21 @@ async function getProjects(req: express.Request, res: express.Response): Promise
 	const resBody: Me.GetMyPersonalProjects.ResponseBody = await services.getProjects(req.sessionID);
 	res
 		.status(200)
+		.send(resBody);
+}
+
+/**
+ * POST /v1/me/projects
+ * create new project
+ * @param req request
+ * @param res response
+ * @returns void
+ */
+async function postProjects(req: express.Request, res: express.Response): Promise<void> {
+	const reqBody: Projects.CreateProject.RequestBody = validators.BodyPostProjects(req);
+	const resBody: Projects.CreateProject.ResponseBody = await services.postProjects(req.sessionID, reqBody);
+
+	res
+		.status(201)
 		.send(resBody);
 }
