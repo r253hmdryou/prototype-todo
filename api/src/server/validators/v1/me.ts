@@ -4,7 +4,7 @@ import vs from "value-schema";
 import { AppError } from "libs/error/AppError";
 import { ErrorMessage, errorMessages } from "libs/error/messages";
 
-import { ProjectAccessLevel, Projects, ProjectTypePersonal } from "types/api";
+import { Me, ProjectAccessLevel, ProjectTypePersonal } from "types/api";
 import { RULE } from "../common";
 import { Key } from "value-schema/dist/libs/types";
 import { project } from "libs/validator";
@@ -31,7 +31,7 @@ const schemaBodyPostProjects = {
  * @param req request
  * @returns RequestBody
  */
-export function BodyPostProjects(req: express.Request): Projects.CreateProject.RequestBody {
+export function BodyPostProjects(req: express.Request): Me.CreatePersonalProject.RequestBody {
 	const appError = AppError.factory(errorMessages.project.create);
 
 	return vs.applySchemaObject(schemaBodyPostProjects, req.body, (error) => {

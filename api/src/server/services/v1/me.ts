@@ -1,6 +1,6 @@
 import * as UserUsecase from "features/users/UserUsecase";
 import * as ProjectUsecase from "features/projects/ProjectUsecase";
-import { Me, Projects } from "types/api";
+import { Me } from "types/api";
 
 /**
  * GET /v1/me
@@ -32,10 +32,9 @@ export async function getProjects(sessionID: string): Promise<Me.GetMyPersonalPr
  * @param input プロジェクト作成に必要なデータ
  * @returns 作成されたプロジェクト
  */
-export async function postProjects(sessionID: string, input: Projects.CreateProject.RequestBody): Promise<Projects.CreateProject.ResponseBody> {
+export async function postProjects(sessionID: string, input: Me.CreatePersonalProject.RequestBody): Promise<Me.CreatePersonalProject.ResponseBody> {
 	const accessLevel = ProjectUsecase.convertAccessLevel(input.accessLevel);
-	const type = ProjectUsecase.convertType(input.type);
 	const user = await UserUsecase.findAuthorizedUser(sessionID);
-	const project = await ProjectUsecase.create(user, input.name, input.description, accessLevel, type);
+	const project = await ProjectUsecase.createPersonal(user, input.name, input.description, accessLevel);
 	return ProjectUsecase.toResponse(project);
 }

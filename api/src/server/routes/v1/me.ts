@@ -4,7 +4,7 @@ import { routingHandler } from "libs/handler";
 import * as services from "services/v1/me";
 
 import * as validators from "validators/v1/me";
-import { Me, Projects } from "types/api";
+import { Me } from "types/api";
 
 /**
  * routing me
@@ -53,8 +53,8 @@ async function getProjects(req: express.Request, res: express.Response): Promise
  * @returns void
  */
 async function postProjects(req: express.Request, res: express.Response): Promise<void> {
-	const reqBody: Projects.CreateProject.RequestBody = validators.BodyPostProjects(req);
-	const resBody: Projects.CreateProject.ResponseBody = await services.postProjects(req.sessionID, reqBody);
+	const reqBody: Me.CreatePersonalProject.RequestBody = validators.BodyPostProjects(req);
+	const resBody: Me.CreatePersonalProject.ResponseBody = await services.postProjects(req.sessionID, reqBody);
 
 	res
 		.status(201)

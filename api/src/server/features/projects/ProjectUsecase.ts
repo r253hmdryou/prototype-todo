@@ -1,4 +1,4 @@
-import { Project, ProjectAccessLevel, ProjectType, ProjectTypePersonal } from "types/api";
+import { Project, ProjectAccessLevel, ProjectTypePersonal } from "types/api";
 
 import { AccessLevel, ProjectEntity, Type } from "./ProjectEntity";
 import * as ProjectRepository from "./ProjectRepository";
@@ -36,7 +36,7 @@ export function convertAccessLevel(accessLevelString: ProjectAccessLevel): Acces
  * @param typeString TypeString
  * @returns Type
  */
-export function convertType(typeString: ProjectType): Type {
+export function convertType(typeString: ProjectTypePersonal): Type {
 	switch (typeString) {
 
 	case ProjectTypePersonal.Personal:
@@ -65,6 +65,18 @@ export async function create(user: UserEntity, name: string, description: string
 
 	await ProjectRepository.save(project);
 	return project;
+}
+
+/**
+ * 個人プロジェクトを作成する
+ * @param user ユーザー
+ * @param name プロジェクト名
+ * @param description プロジェクトの説明
+ * @param accessLevel 公開範囲
+ * @returns 作成されたプロジェクト
+ */
+export async function createPersonal(user: UserEntity, name: string, description: string, accessLevel: AccessLevel): Promise<ProjectEntity> {
+	return await create(user, name, description, accessLevel, Type.PERSONAL);
 }
 
 /**
@@ -105,7 +117,7 @@ export function toResponse$accessLevel(accessLevel: AccessLevel): ProjectAccessL
  * @param type プロジェクトの種類
  * @returns プロジェクトの種類
  */
-export function toResponse$type(type: Type): ProjectType {
+export function toResponse$type(type: Type): ProjectTypePersonal {
 	switch (type) {
 
 	case Type.PERSONAL:
